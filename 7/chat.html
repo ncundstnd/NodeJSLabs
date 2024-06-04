@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>WebSocket Chat</title>
+</head>
+
+<body>
+  <div class="chat-container">
+    <h1>WebSocket Chat</h1>
+    <input class="input-field" id="name-input" type="text" placeholder="Type your name">
+    <input class="input-field" id="message-input" type="text" placeholder="Type your message">
+    <button class="send-button" onclick="sendMessage()">Send</button>
+    <a class="disconnect-link" href="#" onclick="disconnectFromChat()">Disconnect from chat</a>
+    <div class="message-container" id="message-container"></div>
+  </div>
+  <script>
+    const socket = new WebSocket('ws://localhost:4000');
+
+    socket.addEventListener('open', function (event) {
+      console.log('WebSocket connected');
+    });
+
+    socket.addEventListener('message', function (event) {
+      console.log('Message from server:', event.data);
+      showMessage(event.data);
+    });
+
+    function sendMessage() {
+      const nameInput = document.getElementById('name-input');
+      const messageInput = document.getElementById('message-input');
+      const name = nameInput.value.trim();
+      const message = messageInput.value.trim();
+
+      if (name && message) {
+        const data = {
+          name: name,
+          message: message
+        };
+        socket.send(JSON.stringify(data));
+        messageInput.value = '';
+      }
+    }
+
+    function showMessage(message) {
+      const messageContainer = document.getElementById('message-container');
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('message');
+      messageDiv.textContent = message;
+      messageContainer.appendChild(messageDiv);
+    }
+
+    function disconnectFromChat() {
+      socket.close();
+      document.getElementById('name-input').disabled = true;
+      document.getElementById('message-input').disabled = true;
+      document.querySelector('.send-button').disabled = true;
+      document.querySelector('.disconnect-link').textContent = 'You have disconnected from chat';
+      document.querySelector('.disconnect-link').removeAttribute('onclick');
+    }
+  </script>
+</body>
+
+</html>

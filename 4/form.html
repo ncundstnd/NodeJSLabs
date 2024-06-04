@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Client</title>
+</head>
+
+<body>
+  <h1>API Client</h1>
+
+  <h2>GET Request</h2>
+  <button onclick="sendGETRequest()">Send GET Request</button>
+  <div id="get-response"></div>
+
+  <h2>POST Request</h2>
+  <label for="post-id">ID:</label>
+  <input type="text" id="post-id">
+  <label for="post-name">Name:</label>
+  <input type="text" id="post-name">
+  <label for="post-bday">Birthday:</label>
+  <input type="text" id="post-bday">
+  <button onclick="sendPOSTRequest()">Send POST Request</button>
+  <div id="post-response"></div>
+
+  <h2>PUT Request</h2>
+  <label for="put-id">ID:</label>
+  <input type="text" id="put-id">
+  <label for="put-name">Name:</label>
+  <input type="text" id="put-name">
+  <label for="put-bday">Birthday:</label>
+  <input type="text" id="put-bday">
+  <button onclick="sendPUTRequest()">Send PUT Request</button>
+  <div id="put-response"></div>
+
+  <h2>DELETE Request</h2>
+  <label for="delete-id">ID:</label>
+  <input type="text" id="delete-id">
+  <button onclick="sendDELETERequest()">Send DELETE Request</button>
+  <div id="delete-response"></div>
+
+  <script>
+    function sendGETRequest() {
+      fetch('/api/db')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('get-response').innerHTML = JSON.stringify(data, null, 2);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function sendPOSTRequest() {
+      const id = parseInt(document.getElementById('post-id').value);
+      const name = document.getElementById('post-name').value;
+      const bday = document.getElementById('post-bday').value;
+      const data = JSON.stringify({ id, name, bday });
+      fetch('/api/db', {
+        method: 'POST',
+        body: data,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('post-response').innerHTML = JSON.stringify(data, null, 2);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function sendPUTRequest() {
+      const id = parseInt(document.getElementById('put-id').value);
+      const name = document.getElementById('put-name').value;
+      const bday = document.getElementById('put-bday').value;
+      const data = JSON.stringify({ id, name, bday });
+      fetch(`/api/db/${id}`, {
+        method: 'PUT',
+        body: data,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('put-response').innerHTML = JSON.stringify(data, null, 2);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function sendDELETERequest() {
+      const id = document.getElementById('delete-id').value;
+      fetch(`/api/db/${id}`, {
+        method: 'DELETE',
+      })
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('delete-response').innerHTML = JSON.stringify(data, null, 2);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ninja Turtles</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .turtle-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .turtle-card {
+      width: 300px;
+      margin: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .turtle-image {
+      width: 100%;
+      border-radius: 5px;
+    }
+
+    .turtle-details {
+      margin-top: 10px;
+    }
+
+    .pagination {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .pagination button {
+      margin: 0 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Ninja Turtles</h1>
+
+  <div class="turtle-container" id="turtle-container">
+    <!-- Turtles will be displayed here -->
+  </div>
+
+  <div class="pagination" id="pagination"></div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const apiUrl = "http://localhost:3000/api/turtles";
+      const turtleContainer = document.getElementById("turtle-container");
+      const pagination = document.getElementById("pagination");
+      const turtlesPerPage = 3;
+      let currentPage = 1;
+
+      async function getItemName(type, id) {
+        const response = await fetch(`http://localhost:3000/api/${type}/${id}`);
+        const data = await response.json();
+        return data.name;
+      }
+
+      async function displayTurtles(page) {
+        const response = await fetch(apiUrl);
+        const turtles = await response.json();
+
+        turtleContainer.innerHTML = ''; // Clear previous content
+
+        const startIndex = (page - 1) * turtlesPerPage;
+        const endIndex = page * turtlesPerPage;
+        const paginatedTurtles = turtles.slice(startIndex, endIndex);
+
+        paginatedTurtles.forEach(async (turtle) => {
+          const favoritePizzaName = await getItemName('pizzas', turtle.favoritePizzaId);
+          const secondFavoritePizzaName = await getItemName('pizzas', turtle.secondFavoritePizzaId);
+          const weaponName = await getItemName('weapons', turtle.weaponId);
+
+          const turtleElement = document.createElement('div');
+          turtleElement.classList.add('turtle-card');
+          turtleElement.innerHTML = `
+                <img src="${turtle.image}" alt="${turtle.name}" class="turtle-image">
+                <div class="turtle-details">
+                  <h2>${turtle.name}</h2>
+                  <p><strong>Color:</strong> ${turtle.color}</p>
+                  <p><strong>Favorite Pizza:</strong> ${favoritePizzaName}</p>
+                  <p><strong>Second Favorite Pizza:</strong> ${secondFavoritePizzaName}</p>
+                  <p><strong>Weapon:</strong> ${weaponName}</p>
+                </div>
+              `;
+
+          turtleContainer.appendChild(turtleElement);
+        });
+
+        displayPagination(turtles.length);
+      }
+
+      function displayPagination(totalTurtles) {
+        pagination.innerHTML = '';
+        const totalPages = Math.ceil(totalTurtles / turtlesPerPage);
+
+        for (let i = 1; i <= totalPages; i++) {
+          const button = document.createElement('button');
+          button.textContent = i;
+          button.addEventListener('click', () => {
+            currentPage = i;
+            displayTurtles(currentPage);
+          });
+          pagination.appendChild(button);
+        }
+      }
+
+      displayTurtles(currentPage);
+    });
+  </script>
+</body>
+
+</html>

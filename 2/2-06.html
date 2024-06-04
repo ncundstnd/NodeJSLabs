@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    </head>
+    <body>
+        <h2 id="text"></h2>
+        <script>
+            $(document).ready(function() {
+                $.ajax({
+                    method: 'GET',
+                    url: '/api/name',
+                    success: function(data) {
+                        $('#text').html(data);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Ошибка:', status, error);
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>

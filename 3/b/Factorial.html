@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<body>
+    <h2 id="list"></h2>
+    <script>
+        var input = document.getElementById("list");
+        let n = 0;
+        const d = Date.now();
+
+        for (var k = 0; k < 40; k++) {
+            fetch(`http://localhost:5000/fact?k=${k}`,
+                {
+                    method: 'GET',
+                    mode: 'no-cors',
+                    headers:
+                    {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                }).then(response => { return response.json() })
+                .then((pdata) => {
+                    input.innerHTML += (n++) + '. Результат: ' + (Date.now() - d) + '-' + pdata.k + '/' + pdata.fact + '<br/>';
+                });
+        }
+    </script>
+</body>
+
+</html>
